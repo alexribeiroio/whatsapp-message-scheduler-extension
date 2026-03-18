@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Configurações – WhatsApp Scheduler</title>
+  <link rel="stylesheet" href="options.css" />
+</head>
+<body>
+  <div class="container">
+    <header class="page-header">
+      <span class="page-icon">⚙</span>
+      <div>
+        <h1>Configurações</h1>
+        <p>WhatsApp Message Scheduler</p>
+      </div>
+    </header>
+
+    <form id="settingsForm">
+
+      <!-- Processing -->
+      <section class="section">
+        <h2>Processamento</h2>
+
+        <div class="field">
+          <label for="processingInterval">Intervalo de verificação (minutos)</label>
+          <input type="number" id="processingInterval" min="1" max="60" value="1" />
+          <small>Com que frequência verificar mensagens agendadas. Mínimo: 1 minuto.</small>
+        </div>
+
+        <div class="field">
+          <label for="maxRetries">Máximo de tentativas em caso de falha</label>
+          <input type="number" id="maxRetries" min="1" max="10" value="3" />
+        </div>
+      </section>
+
+      <!-- Rate Limiting -->
+      <section class="section">
+        <h2>Intervalo entre mensagens</h2>
+        <p class="section-desc">
+          Um intervalo aleatório entre esses valores é aguardado antes de cada envio.
+          Reduzir muito esse valor pode causar bloqueios no WhatsApp.
+        </p>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="minDelay">Mínimo (segundos)</label>
+            <input type="number" id="minDelay" min="2" max="300" value="5" />
+          </div>
+          <div class="field">
+            <label for="maxDelay">Máximo (segundos)</label>
+            <input type="number" id="maxDelay" min="2" max="300" value="15" />
+          </div>
+        </div>
+      </section>
+
+      <!-- Notifications -->
+      <section class="section">
+        <h2>Notificações</h2>
+
+        <div class="toggle-field">
+          <div>
+            <label>Notificar ao enviar</label>
+            <small>Exibir notificação quando uma mensagem for enviada com sucesso</small>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="notifyOnSend" checked />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="toggle-field">
+          <div>
+            <label>Notificar em caso de falha</label>
+            <small>Exibir notificação quando uma mensagem falhar após todas as tentativas</small>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="notifyOnFailure" checked />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </section>
+
+      <!-- WhatsApp Behavior -->
+      <section class="section">
+        <h2>Comportamento</h2>
+
+        <div class="toggle-field">
+          <div>
+            <label>Abrir WhatsApp automaticamente</label>
+            <small>Abre o WhatsApp Web em nova aba quando houver mensagens para enviar e ele não estiver aberto</small>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="autoOpenWhatsApp" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="field">
+          <label for="historyRetentionDays">Retenção de histórico (dias)</label>
+          <input type="number" id="historyRetentionDays" min="1" max="365" value="30" />
+          <small>Mensagens enviadas/com falha são removidas após esse período</small>
+        </div>
+      </section>
+
+      <div id="saveMsg" class="save-msg hidden">✔ Configurações salvas!</div>
+
+      <div class="btn-row">
+        <button type="submit" class="btn-primary">Salvar Configurações</button>
+        <button type="button" id="btnReset" class="btn-secondary">Restaurar padrões</button>
+      </div>
+    </form>
+
+    <footer class="page-footer">
+      <p>WhatsApp Message Scheduler v1.0.0</p>
+    </footer>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>

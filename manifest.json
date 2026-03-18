@@ -1,0 +1,55 @@
+{
+  "manifest_version": 3,
+  "name": "WhatsApp Message Scheduler",
+  "version": "1.1.0",
+  "description": "Agende mensagens no WhatsApp Web para datas, horários específicos e recorrentes",
+  "permissions": [
+    "alarms",
+    "storage",
+    "scripting",
+    "notifications",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://web.whatsapp.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://web.whatsapp.com/*"],
+      "js": ["content-script.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://web.whatsapp.com/*"],
+      "js": ["page-bridge.js"],
+      "world": "MAIN",
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["lib/wppconnect-wa.js"],
+      "matches": ["https://web.whatsapp.com/*"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "WhatsApp Scheduler",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "options_page": "options.html"
+}

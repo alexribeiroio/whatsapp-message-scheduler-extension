@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<!--
+  Abra este arquivo em qualquer navegador para gerar os ícones PNG da extensão.
+  Clique em "Gerar e Baixar Ícones" para baixar icon16.png, icon32.png, icon48.png e icon128.png.
+  Mova os arquivos baixados para a pasta icons/.
+-->
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Gerador de Ícones</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; background: #f0f2f5; }
+    h2 { color: #075e54; }
+    .canvases { display: flex; gap: 16px; flex-wrap: wrap; margin: 16px 0; align-items: flex-end; }
+    canvas { border: 1px solid #ccc; border-radius: 4px; }
+    button {
+      padding: 10px 22px; background: #25d366; color: #fff;
+      border: none; border-radius: 8px; font-size: 14px; font-weight: 600;
+      cursor: pointer; margin-top: 8px;
+    }
+    button:hover { background: #128c7e; }
+    p { color: #555; font-size: 13px; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <h2>Gerador de Ícones – WhatsApp Scheduler</h2>
+  <p>Pré-visualização dos ícones que serão gerados:</p>
+  <div class="canvases" id="canvasContainer"></div>
+  <button onclick="downloadAll()">Gerar e Baixar Ícones</button>
+  <p>Após baixar, mova os arquivos <code>icon16.png</code>, <code>icon32.png</code>, <code>icon48.png</code> e <code>icon128.png</code> para a pasta <code>icons/</code> da extensão.</p>
+
+  <script>
+    const SIZES = [16, 32, 48, 128];
+
+    function drawIcon(canvas, size) {
+      const ctx = canvas.getContext('2d');
+      const r = size / 2;
+      const pad = size * 0.08;
+
+      // Background circle
+      ctx.beginPath();
+      ctx.arc(r, r, r - 1, 0, Math.PI * 2);
+      ctx.fillStyle = '#075e54';
+      ctx.fill();
+
+      // Inner lighter circle
+      ctx.beginPath();
+      ctx.arc(r, r, r * 0.85, 0, Math.PI * 2);
+      ctx.fillStyle = '#128c7e';
+      ctx.fill();
+
+      // Chat bubble
+      const bx = size * 0.18, by = size * 0.20;
+      const bw = size * 0.64, bh = size * 0.45;
+      const br = size * 0.1;
+
+      ctx.beginPath();
+      ctx.roundRect(bx, by, bw, bh, br);
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
+
+      // Bubble tail
+      ctx.beginPath();
+      ctx.moveTo(size * 0.25, size * 0.62);
+      ctx.lineTo(size * 0.18, size * 0.76);
+      ctx.lineTo(size * 0.38, size * 0.64);
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
+
+      // Clock face
+      const cx = size * 0.62, cy = size * 0.60, cr = size * 0.20;
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, cr, 0, Math.PI * 2);
+      ctx.fillStyle = '#25d366';
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, cr * 0.85, 0, Math.PI * 2);
+      ctx.fillStyle = '#fff';
+      ctx.fill();
+
+      // Clock hands
+      ctx.strokeStyle = '#075e54';
+      ctx.lineWidth = Math.max(1, size * 0.035);
+      ctx.lineCap = 'round';
+
+      // Hour hand (pointing ~10 o'clock)
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(cx - cr * 0.45, cy - cr * 0.4);
+      ctx.stroke();
+
+      // Minute hand (pointing ~2 o'clock)
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(cx + cr * 0.5, cy - cr * 0.2);
+      ctx.stroke();
+
+      // Center dot
+      ctx.beginPath();
+      ctx.arc(cx, cy, Math.max(1, size * 0.025), 0, Math.PI * 2);
+      ctx.fillStyle = '#075e54';
+      ctx.fill();
+
+      // Lines inside chat bubble (message lines)
+      if (size >= 32) {
+        ctx.fillStyle = '#25d36688';
+        const lh = size * 0.07;
+        const lx = size * 0.24, lw1 = size * 0.30, lw2 = size * 0.20;
+        ctx.fillRect(lx, size * 0.32, lw1, lh);
+        if (size >= 48) {
+          ctx.fillRect(lx, size * 0.32 + lh * 1.8, lw2, lh);
+        }
+      }
+    }
+
+    // Render previews
+    SIZES.forEach(size => {
+      const c = document.createElement('canvas');
+      c.width = size;
+      c.height = size;
+      c.title = `${size}x${size}`;
+      c.style.width = size + 'px';
+      c.style.height = size + 'px';
+      c.style.imageRendering = 'pixelated';
+      drawIcon(c, size);
+      document.getElementById('canvasContainer').appendChild(c);
+    });
+
+    function downloadAll() {
+      SIZES.forEach(size => {
+        const c = document.createElement('canvas');
+        c.width = size;
+        c.height = size;
+        drawIcon(c, size);
+        const a = document.createElement('a');
+        a.download = `icon${size}.png`;
+        a.href = c.toDataURL('image/png');
+        a.click();
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WhatsApp Scheduler</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <span class="header-icon">📅</span>
+      <span class="header-title">WhatsApp Scheduler</span>
+    </div>
+    <div class="header-right">
+      <span id="waStatus" class="wa-status wa-status--closed" title="WhatsApp Web">●</span>
+      <button class="icon-btn" id="btnOptions" title="Configurações">⚙</button>
+    </div>
+  </header>
+
+  <!-- Tabs -->
+  <nav class="tabs">
+    <button class="tab tab--active" data-tab="new">Nova</button>
+    <button class="tab" data-tab="scheduled">
+      Agendadas <span id="pendingBadge" class="badge hidden">0</span>
+    </button>
+    <button class="tab" data-tab="history">Histórico</button>
+  </nav>
+
+  <!-- ── Tab: Nova Mensagem ── -->
+  <section id="tab-new" class="tab-content tab-content--active">
+    <form id="scheduleForm" autocomplete="off">
+
+      <div class="field">
+        <label for="recipient">Destinatário</label>
+        <input
+          type="text"
+          id="recipient"
+          placeholder="Nome do contato, grupo ou +55 11 99999-9999"
+          required
+          maxlength="200"
+        />
+        <small>Use o nome exato como aparece no WhatsApp</small>
+      </div>
+
+      <div class="field">
+        <label for="message">Mensagem</label>
+        <textarea
+          id="message"
+          placeholder="Digite a mensagem..."
+          required
+          rows="4"
+          maxlength="4096"
+        ></textarea>
+        <small id="charCount">0 / 4096</small>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="schedDate">Data</label>
+          <input type="date" id="schedDate" required />
+        </div>
+        <div class="field">
+          <label for="schedTime">Hora</label>
+          <input type="time" id="schedTime" required />
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="recurrenceType">Recorrência</label>
+        <select id="recurrenceType">
+          <option value="none">Nenhuma (envio único)</option>
+          <option value="daily">Diária</option>
+          <option value="weekly">Semanal</option>
+          <option value="monthly">Mensal</option>
+          <option value="custom">Personalizada</option>
+        </select>
+      </div>
+
+      <!-- Weekly options -->
+      <div id="weeklyOptions" class="field recurrence-options hidden">
+        <label>Dias da semana</label>
+        <div class="day-picker">
+          <label><input type="checkbox" value="0" /><span>Dom</span></label>
+          <label><input type="checkbox" value="1" /><span>Seg</span></label>
+          <label><input type="checkbox" value="2" /><span>Ter</span></label>
+          <label><input type="checkbox" value="3" /><span>Qua</span></label>
+          <label><input type="checkbox" value="4" /><span>Qui</span></label>
+          <label><input type="checkbox" value="5" /><span>Sex</span></label>
+          <label><input type="checkbox" value="6" /><span>Sáb</span></label>
+        </div>
+      </div>
+
+      <!-- Monthly options -->
+      <div id="monthlyOptions" class="field recurrence-options hidden">
+        <label for="dayOfMonth">Dia do mês</label>
+        <input type="number" id="dayOfMonth" min="1" max="31" value="1" />
+      </div>
+
+      <!-- Custom interval -->
+      <div id="customOptions" class="field-row recurrence-options hidden">
+        <div class="field">
+          <label for="customInterval">A cada</label>
+          <input type="number" id="customInterval" min="1" max="9999" value="1" />
+        </div>
+        <div class="field">
+          <label for="customUnit">Unidade</label>
+          <select id="customUnit">
+            <option value="minutes">Minutos</option>
+            <option value="hours">Horas</option>
+            <option value="days" selected>Dias</option>
+            <option value="weeks">Semanas</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Recurrence end options -->
+      <div id="recurrenceEnd" class="recurrence-options hidden">
+        <div class="field-row">
+          <div class="field">
+            <label for="endDate">Terminar em (opcional)</label>
+            <input type="date" id="endDate" />
+          </div>
+          <div class="field">
+            <label for="endAfterCount">Ou após (ocorrências)</label>
+            <input type="number" id="endAfterCount" min="1" max="9999" placeholder="∞" />
+          </div>
+        </div>
+      </div>
+
+      <div id="formError" class="error-msg hidden"></div>
+
+      <button type="submit" class="btn-primary">
+        <span>📅</span> Agendar Mensagem
+      </button>
+    </form>
+  </section>
+
+  <!-- ── Tab: Agendadas ── -->
+  <section id="tab-scheduled" class="tab-content">
+    <div class="list-toolbar">
+      <input type="text" id="searchScheduled" placeholder="Filtrar..." class="search-input" />
+    </div>
+    <div id="scheduledList" class="message-list">
+      <div class="empty-state">
+        <span class="empty-icon">📭</span>
+        <p>Nenhuma mensagem agendada</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Tab: Histórico ── -->
+  <section id="tab-history" class="tab-content">
+    <div class="list-toolbar">
+      <span id="historyCount" class="count-label"></span>
+      <button id="btnClearHistory" class="btn-danger-sm">Limpar</button>
+    </div>
+    <div id="historyList" class="message-list">
+      <div class="empty-state">
+        <span class="empty-icon">📜</span>
+        <p>Nenhum histórico disponível</p>
+      </div>
+    </div>
+  </section>
+
+  <script src="popup.js"></script>
+</body>
+</html>

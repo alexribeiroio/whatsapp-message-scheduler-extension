@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@wppconnect/wa-js": "^3.23.2",
+    "canvas": "^3.2.1"
+  }
+}
