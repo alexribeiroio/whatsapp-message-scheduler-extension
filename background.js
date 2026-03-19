@@ -238,6 +238,15 @@ function calculateNextOccurrence(message) {
       return next.getTime();
     }
 
+    case 'weekdays': {
+      const next = new Date(base);
+      next.setDate(next.getDate() + 1);
+      while (next.getDay() === 0 || next.getDay() === 6) {
+        next.setDate(next.getDate() + 1);
+      }
+      return next.getTime();
+    }
+
     case 'weekly': {
       const days = recurrence.daysOfWeek?.length ? recurrence.daysOfWeek : [base.getDay()];
       const next = new Date(base);

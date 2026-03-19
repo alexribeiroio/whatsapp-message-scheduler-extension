@@ -374,6 +374,7 @@ function showScheduleDialog() {
         <select id="wams-recurrence" style="${inputStyle}">
           <option value="none">Nenhuma (envio único)</option>
           <option value="daily">Diária</option>
+          <option value="weekdays">Dias úteis (seg–sex)</option>
           <option value="weekly">Semanal</option>
           <option value="monthly">Mensal (mesmo dia)</option>
           <option value="custom">Personalizada</option>
