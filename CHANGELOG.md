@@ -8,10 +8,14 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/) e o 
 
 ## [Unreleased]
 
+---
+
+## [1.1.1] — 2026-03-18
+
 ### Corrigido
 
 - **`WPP.isReady` (propriedade booleana)** — `waitForWPP()` usava `WPP.webpack.onReady()` que pode não existir em algumas versões do wa-js. Substituído por polling simples em `WPP.isReady` (booleano oficial da API atual).
-- **Resolução de contato com nome parcial** — `resolveChat()` agora busca também em `WPP.contact.list()` (contatos fora de conversas recentes) e aplica matching por palavras significativas, ignorando iniciais (ex: "Q." em "Allan Q. Macedo" → encontra "Allan Macedo").
+- **Resolução de contato com nome parcial** — `resolveChat()` agora busca também em `WPP.contact.list()` (contatos fora de conversas recentes) e aplica matching por palavras significativas, ignorando iniciais (ex: "Q." em "Alex Q. Teste" → encontra "Alex Teste").
 
 ---
 
