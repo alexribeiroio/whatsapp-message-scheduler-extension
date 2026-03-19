@@ -49,14 +49,16 @@
 
   function waitForWPP(timeoutMs = 25000) {
     return new Promise((resolve, reject) => {
-      // Nota: WPP.webpack.isReady não é uma função na versão atual do wa-js.
-      // Usar apenas onReady() via polling, que é a API estável.
-      const deadline = Date.now() + timeoutMs;
+      // WPP.isReady é a propriedade booleana oficial do wa-js atual.
+      // Evitar chamar WPP.webpack.isReady() ou WPP.webpack.onReady() pois
+      // podem não existir dependendo da versão do wa-js.
+      if (window.WPP && WPP.isReady) { resolve(); return; }
 
+      const deadline = Date.now() + timeoutMs;
       const poll = setInterval(() => {
-        if (typeof WPP !== 'undefined' && WPP.webpack) {
+        if (window.WPP && WPP.isReady) {
           clearInterval(poll);
-          WPP.webpack.onReady(() => resolve());
+          resolve();
         } else if (Date.now() > deadline) {
           clearInterval(poll);
           reject(new Error('WPP não ficou pronto no tempo limite (25s). O WhatsApp pode ter mudado sua estrutura interna.'));
@@ -83,33 +85,67 @@
       }
     }
 
+    // Normaliza removendo acentos, maiúsculas e espaços extras
+    const norm = s => (s || '').toLowerCase()
+      .normalize('NFD').replace(/\p{M}/gu, '').trim();
+
+    const needle = norm(trimmed);
+
     // Estratégia 2 — Busca por nome em todos os chats carregados
     let chats = [];
     try {
       chats = await WPP.chat.list({});
     } catch (e) {
-      throw new Error(`Falha ao listar chats: ${e.message}`);
+      console.warn('[WAMS-Bridge] WPP.chat.list() falhou:', e.message);
     }
 
-    if (!chats || chats.length === 0) {
-      throw new Error('Nenhum chat carregado. Aguarde o WhatsApp carregar a lista de conversas.');
+    if (chats && chats.length > 0) {
+      const getChatName = (c) =>
+        norm(c.name || c.contact?.pushname || c.contact?.formattedName || '');
+
+      // Palavras significativas do needle (≥3 chars, ignora iniciais como "Q.")
+      const sigWords = needle.split(/\s+/).filter(w => w.replace(/\W/g, '').length >= 3);
+      const wordMatch = c => sigWords.length > 0 && sigWords.every(w => getChatName(c).includes(w));
+
+      const exact   = chats.find(c => getChatName(c) === needle);
+      const partial = exact
+        || chats.find(c => getChatName(c).includes(needle))
+        || chats.find(c => wordMatch(c));
+      if (partial) return partial.id?._serialized ?? partial.id ?? String(partial.id);
     }
 
-    const needle = trimmed.toLowerCase();
+    // Estratégia 3 — Busca em WPP.contact.list() (inclui contatos fora das conversas recentes)
+    let contacts = [];
+    try {
+      contacts = WPP.contact.list();
+    } catch (_) { /* contact.list pode não existir em todas as versões */ }
 
-    const getName = (c) =>
-      (c.name || c.contact?.pushname || c.contact?.formattedName || '').toLowerCase();
+    if (contacts && contacts.length > 0) {
+      const getContactName = (c) =>
+        norm(c.name || c.pushname || c.formattedName || '');
 
-    // Match exato primeiro, depois parcial
-    const exact   = chats.find(c => getName(c) === needle);
-    const partial = exact || chats.find(c => getName(c).includes(needle));
+      const sigWordsC = needle.split(/\s+/).filter(w => w.replace(/\W/g, '').length >= 3);
+      const wordMatchC = c => sigWordsC.length > 0 && sigWordsC.every(w => getContactName(c).includes(w));
 
-    if (!partial) {
-      throw new Error(`Contato/grupo não encontrado: "${recipient}". Use o nome exato como aparece no WhatsApp ou um número de telefone com DDI.`);
+      const exactContact   = contacts.find(c => getContactName(c) === needle);
+      const partialContact = exactContact
+        || contacts.find(c => getContactName(c).includes(needle))
+        || contacts.find(c => wordMatchC(c));
+      if (partialContact) return partialContact.id?._serialized ?? String(partialContact.id);
     }
 
-    // Serializa o ID para string (formato: "5511999@c.us" ou "12036xxx@g.us")
-    return partial.id?._serialized ?? partial.id ?? String(partial.id);
+    // Estratégia 4 — WPP.chat.search() se disponível
+    try {
+      if (typeof WPP.chat.search === 'function') {
+        const results = await WPP.chat.search({ query: trimmed, count: 10 });
+        console.log('[WAMS-Bridge] WPP.chat.search() resultados:', results?.map(r => norm(r.name || '')));
+        if (results && results.length > 0) {
+          return results[0].id?._serialized ?? String(results[0].id);
+        }
+      }
+    } catch (_) { /* search pode não existir */ }
+
+    throw new Error(`Contato/grupo não encontrado: "${recipient}". Use o nome exato como aparece no WhatsApp ou um número de telefone com DDI.`);
   }
 
   // ─── Envio via WPP ───────────────────────────────────────────────────────────
