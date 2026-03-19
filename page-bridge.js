@@ -85,11 +85,19 @@
       }
     }
 
-    // Normaliza removendo acentos, maiúsculas e espaços extras
+    // Normaliza: minúsculas, remove acentos, emojis, pontuação e espaços extras.
+    // Mantém apenas letras (qualquer idioma) e números.
     const norm = s => (s || '').toLowerCase()
-      .normalize('NFD').replace(/\p{M}/gu, '').trim();
+      .normalize('NFD')
+      .replace(/[^\p{L}\p{N}\s]/gu, '') // remove acentos, emojis, pontuação
+      .replace(/\s+/g, ' ')
+      .trim();
 
     const needle = norm(trimmed);
+
+    // Palavras com ≥3 chars (ignora iniciais como "Q" e variações)
+    const sigWords = needle.split(' ').filter(w => w.length >= 3);
+    const wordMatch = (name) => sigWords.length > 0 && sigWords.every(w => name.includes(w));
 
     // Estratégia 2 — Busca por nome em todos os chats carregados
     let chats = [];
@@ -103,14 +111,10 @@
       const getChatName = (c) =>
         norm(c.name || c.contact?.pushname || c.contact?.formattedName || '');
 
-      // Palavras significativas do needle (≥3 chars, ignora iniciais como "Q.")
-      const sigWords = needle.split(/\s+/).filter(w => w.replace(/\W/g, '').length >= 3);
-      const wordMatch = c => sigWords.length > 0 && sigWords.every(w => getChatName(c).includes(w));
-
       const exact   = chats.find(c => getChatName(c) === needle);
       const partial = exact
         || chats.find(c => getChatName(c).includes(needle))
-        || chats.find(c => wordMatch(c));
+        || chats.find(c => wordMatch(getChatName(c)));
       if (partial) return partial.id?._serialized ?? partial.id ?? String(partial.id);
     }
 
@@ -124,13 +128,10 @@
       const getContactName = (c) =>
         norm(c.name || c.pushname || c.formattedName || '');
 
-      const sigWordsC = needle.split(/\s+/).filter(w => w.replace(/\W/g, '').length >= 3);
-      const wordMatchC = c => sigWordsC.length > 0 && sigWordsC.every(w => getContactName(c).includes(w));
-
       const exactContact   = contacts.find(c => getContactName(c) === needle);
       const partialContact = exactContact
         || contacts.find(c => getContactName(c).includes(needle))
-        || contacts.find(c => wordMatchC(c));
+        || contacts.find(c => wordMatch(getContactName(c)));
       if (partialContact) return partialContact.id?._serialized ?? String(partialContact.id);
     }
 

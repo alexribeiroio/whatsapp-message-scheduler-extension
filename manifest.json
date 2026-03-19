@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "WhatsApp Message Scheduler",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Agende mensagens no WhatsApp Web para datas, horários específicos e recorrentes",
   "permissions": [
     "alarms",

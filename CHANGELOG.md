@@ -10,7 +10,15 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/) e o 
 
 ---
 
-## [1.1.1] — 2026-03-18
+## [1.1.2] — 2026-03-19
+
+### Corrigido
+
+- **Emojis no nome do contato** — `norm()` agora remove todos os caracteres que não são letras ou números (`[^\p{L}\p{N}\s]`), incluindo emojis colados à palavra (ex: `"boa🍻"` → `"boa"`). Isso garante matching correto independentemente de emojis, pontuação ou hífens nos nomes.
+
+---
+
+## [1.1.1] — 2026-03-19
 
 ### Corrigido
 
@@ -64,7 +72,8 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/) e o 
 
 ---
 
-[Unreleased]: https://github.com/alexribeiroio/whatsapp-message-scheduler-extension/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/alexribeiroio/whatsapp-message-scheduler-extension/compare/v1.1.2...HEAD
+[1.1.2]: https://github.com/alexribeiroio/whatsapp-message-scheduler-extension/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/alexribeiroio/whatsapp-message-scheduler-extension/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/alexribeiroio/whatsapp-message-scheduler-extension/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/alexribeiroio/whatsapp-message-scheduler-extension/releases/tag/v1.0.0
